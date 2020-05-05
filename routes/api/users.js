@@ -12,7 +12,7 @@ const config = require('config');
 // @desc register new user
 // @access public
 router.post('/', [
-    check('name', 'Name is required').not().isEmpty(),
+    // check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Please enter a password with 6 or more characters')
         .isLength({ min: 6 })
@@ -37,14 +37,15 @@ async (req, res) => {
             password,
             avatar
         });
-        // check for existing avatar
-        if (!avatar) { 
-            avatar = gravatar.url(email, {
-                s: '200',
-                r: 'pg',
-                d: 'retro'
-            });
-        }
+        // // check for existing avatar
+        // if (!avatar) {
+        //     avatar = gravatar.url(email, {
+        //         s: '200',
+        //         r: 'pg',
+        //         d: 'retro'
+        //     });
+        //     user.avatar = avatar;
+        // }
         // Encrypt password
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
