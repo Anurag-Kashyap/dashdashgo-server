@@ -12,17 +12,18 @@ const ProfileSchema = new mongoose.Schema({
     avatar: {
         type: String
     },
-    userApps: {
+    userApps: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'apps'
-    },
-    frequentApps: {
+    }],
+    frequentApps: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'frequentApps'
-    },
+        ref: 'frequentApps',
+        default: null
+    }],
     organization: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'organization'
+        ref: 'organization',
     },
     isAdmin: {
         type: Boolean,
