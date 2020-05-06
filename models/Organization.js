@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const OrganizationSchema = new mongoose.Schema({
-    organization: {
+    name: {
         type: String,
-        default: 'RockStack Capital'
+        required: true
     },
     createdAt: {
         type: Date,
