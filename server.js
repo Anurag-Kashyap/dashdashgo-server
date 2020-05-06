@@ -12,6 +12,7 @@ app.use(
     extended: false,
   })
 );
+
 app.use(cors());
 
 app.get("/", (req, res) => {

@@ -4,9 +4,10 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 
 const router = express.Router();
-const Profile = require('../../models/Profile');
+// const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const Organization = require('../../models/Organization');
+const App = require("../../models/Apps");
 const config = require('config');
 
 // @route GET /profile
@@ -14,15 +15,15 @@ const config = require('config');
 // @access private
 router.get('/', auth, async (req, res) => {
     try {
-        let profile = await Profile.findOne({ user: req.user.id })
-            .populate('user', ['email']);
-        if (!profile) {
+        let user = await User.findById(req.user.id)
+            .populate('organization', ['name']);;
+        if (!user) {
             return res.status(400).json({ errors: [{ msg: 'User Profile Doesn\'t exist'}] })
         }
-        res.json(profile);
+        res.json(user);
     } catch(err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(err.message);
     }
 });
 
@@ -30,61 +31,68 @@ router.get('/', auth, async (req, res) => {
 // @route POST /profile
 // @desc create or update user profile
 // @access private
-router.post('/', [auth, [
-    check('name', 'Please include your Name').not().isEmpty(),
-    check('userApps', 'Please select some apps to add to your list').not().isEmpty()
-]], async (req, res) => {
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+router.post('/', auth, async (req, res) => {
 
     let { name, avatar, userApps, organization } = req.body;
+    
     try {
         let user = await User.findById(req.user.id);
-        let profile = await Profile.findOne({ user: req.user.id })
-            .populate('user', ['email']);
-        
-        let _profile = new Profile({
-            user,
-            name,
-            avatar,
-            userApps,
-            organization
-        });
+
+        // non existing user profile
+        if (!user) {
+            return res.status(400).json({ errors: [{ msg: "User profile doesn't exist" }] });
+        }
 
         let _organization = new Organization({
             name
         });
 
-        if (!profile) {
-            console.log('Creating new user profile');
-            _profile.user = req.user.id
-            _profile.name = name;
-            if (!avatar) {
-                avatar = gravatar.url(user.email, {
-                    s: '200',
-                    r: 'pg',
-                    d: 'retro'
-                });
-            }
-            _profile.avatar = avatar;
-            if (userApps) _profile.userApps = userApps;
+        let profileFields = {};
+        
+        if (name) profileFields.name = name;
 
-            if (!organization) {
-                organization = 'RockStack Capital';
-            }
+        if (!user.avatar && !avatar) {
+            avatar = gravatar.url(user.email, {
+                s: '200',
+                r: 'pg',
+                d: 'retro'
+            });
+            profileFields.avatar = avatar;
+        } else if (avatar) {
+            profileFields.avatar = avatar;
+        }
+
+        if (userApps) {
+            profileFields.userApps = userApps;
+        }
+
+        if (!user.organization && !organization) {  // no org data provided nor org mapped with user before
+            organization = 'RockStack Capital';
             _organization.name = organization
             await _organization.save()
             let org = await Organization.findOne({ name: organization });
-            _profile.organization = org.id;
-
-            await _profile.save();
-            return res.json(_profile);
+            profileFields.organization = org.id;
+        } else if (organization) { 
+            let org = await Organization.findOne({ name: organization });
+            if (!org) { // org data provided but org non-existent before
+                _organization.name = organization
+                await _organization.save()
+                let newOrg = await Organization.findOne({ name: organization });
+                profileFields.organization = newOrg.id;
+            } else { // org data provided and org exists
+                profileFields.organization = org.id;
+            }
         }
 
-        res.json({ error: null, ok: 'Profile updated successfully' });
+        //updating existing user profile
+        profile = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: profileFields },
+            { new: true }
+        ).populate('organization', ['name']);
+        
+        res.json(profile);
+
     } catch(err) {
         console.error(err.message);
         res.status(500).send('Server Error');
