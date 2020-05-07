@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://default:LK9kAB3kuArDgvw@rockstack-is-awzon.mongodb.net/test?retryWrites=true&w=majority",
+    "jwtSecret": "MySecretKey"
+}
