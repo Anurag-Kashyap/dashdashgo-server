@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server",
     "server": "nodemon server",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false yarn add --prefix integratedSolution-front-end && npm run build --prefix integratedSolution-front-end"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false"
   },
   "author": "Anurag Kashyap",
   "license": "MIT",
