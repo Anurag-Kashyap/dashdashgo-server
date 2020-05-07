@@ -24,6 +24,7 @@ app.use("/auth", require("./routes/api/auth"));
 app.use("/profile", require("./routes/api/profile"));
 app.use("/category", require("./routes/api/category"));
 app.use("/apps", require("./routes/api/apps"));
+app.use("/frequent-apps", require("./routes/api/frequentApps"));
 
 const PORT = process.env.PORT || 5000;
 

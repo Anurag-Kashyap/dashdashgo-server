@@ -67,11 +67,16 @@ router.post('/', auth, async (req, res) => {
         }
 
         if (!user.organization && !organization) {  // no org data provided nor org mapped with user before
-            organization = 'RockStack Capital';
-            _organization.name = organization
-            await _organization.save()
             let org = await Organization.findOne({ name: organization });
-            profileFields.organization = org.id;
+            if (!org) {
+                organization = 'Default Organization';
+                _organization.name = organization
+                await _organization.save()
+                let newOrg = await Organization.findOne({ name: organization });
+                profileFields.organization = newOrg.id;
+            } else {
+                profileFields.organization = org.id;
+            }
         } else if (organization) { 
             let org = await Organization.findOne({ name: organization });
             if (!org) { // org data provided but org non-existent before

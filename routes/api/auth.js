@@ -60,12 +60,12 @@ async (req, res) => {
             config.get('jwtSecret'),
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({ token: token });
             }
         );
     } catch(err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(err.message);
     }
 });
 
