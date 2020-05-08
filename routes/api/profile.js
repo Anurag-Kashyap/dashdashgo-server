@@ -38,13 +38,22 @@ router.get("/", auth, async (req, res) => {
           name: 1,
           icon: 1,
         },
+      })
+      .select({
+        _id: 0,
+        password: 0,
+      })
+      .exec((err, data) => {
+        if (err)
+          return res
+            .status(400)
+            .json({ errors: [{ msg: "User Profile Doesn't exist" }] });
+
+        if (data.organization) {
+          data.organization = data.organization.name;
+        }
+        res.json(data);
       });
-    if (!user) {
-      return res
-        .status(400)
-        .json({ errors: [{ msg: "User Profile Doesn't exist" }] });
-    }
-    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
