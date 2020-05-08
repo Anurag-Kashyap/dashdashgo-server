@@ -21,29 +21,47 @@ router.post('/', auth,
             res.status(400).json({ error: { msg: 'There\'s no selected user apps currently' }});
         }
 
-        let frequentApp = {};
-        frequentApp.frequentApps = {};
+        let newFreqApp = {};
+        newFreqApp.app = app;
+        let appIndex = _.findIndex(user.userApps, ((obj) => {
+            return obj.app == app;
+        }));
+        newFreqApp.url = user.userApps[appIndex].url;
+        
+        let freqAppList = {};
+        freqAppList.frequentApps = user.frequentApps;
+        if (freqAppList.frequentApps) {         // frequent apps exist
+            let FreqAppIndex = _.findIndex(user.frequentApps, ((obj) => {
+                return obj.app == app;
+            }));
+            if (FreqAppIndex == -1) {           // frequent apps exist + this app doesn't exist here yet
+                newFreqApp.frequency = 1;
+                freqAppList.frequentApps.push(newFreqApp);
 
-        frequentApp.frequentApps.app = app;
+                // sort in desc and limit the max of number of freq apps to 5
+                if (freqAppList.frequentApps.length>5) {
+                    freqAppList.frequentApps = freqAppList.frequentApps.sort(function(a, b) {
+                            return parseFloat(b.frequency) - parseFloat(a.frequency);
+                        }).splice(0,5);
+                }
 
-        let userApp = _.findIndex(user.userApps, ['app', app]);
-        console.log('check ', userApp);
-        // frequentApp.frequentApps.url = 
-
-        // if (user.frequentApps.filter({app: app}).frequency) {
-        //     frequentApp.frequentApps.frequency = user.frequentApps.filter({app: app}).frequency + 1
-        // } else {
-        //     frequentApp.frequentApps.frequenc = 1;
-        // }
+            } else {                            // frequent apps exist + this app is already in here
+                newFreqApp.frequency = user.frequentApps[FreqAppIndex].frequency + 1;
+                user.frequentApps[FreqAppIndex] = newFreqApp;
+            }
+        } else {                                // frequent apps doesn't exist yet
+            newFreqApp.frequency = 1;
+            freqAppList.frequentApps = newFreqApp;
+        }
 
         _user = await User.findByIdAndUpdate(
             req.user.id,
-            { $set: frequentApp },
-            { new: true })
-
-        console.log(_user, frequentApp);
+            { $set: freqAppList },
+            { new: true }
+        );
 
         res.json(_user);
+
     } catch(err) {
         console.error(err.message);
         res.status(500).send(err.message);
