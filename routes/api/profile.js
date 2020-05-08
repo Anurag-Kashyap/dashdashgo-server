@@ -55,7 +55,7 @@ router.get("/", auth, async (req, res) => {
 // @desc create or update user profile
 // @access private
 router.post("/", auth, async (req, res) => {
-  let { name, avatar, userApps, organization } = req.body;
+  let { name, avatar, userApps, organization, onboardingPhase } = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -114,6 +114,10 @@ router.post("/", auth, async (req, res) => {
         // org data provided and org exists
         profileFields.organization = org.id;
       }
+    }
+
+    if (onboardingPhase) {
+      profileFields.onboardingPhase = onboardingPhase;
     }
 
     //updating existing user profile

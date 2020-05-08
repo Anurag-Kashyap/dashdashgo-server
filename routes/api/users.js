@@ -29,7 +29,6 @@ router.post(
     let { email, password } = req.body;
 
     try {
-      
       let user = await User.findOne({ email });
       // check user existency
       if (user) {
@@ -39,7 +38,7 @@ router.post(
       }
       user = new User({
         email,
-        password
+        password,
       });
 
       // Encrypt password
@@ -57,9 +56,9 @@ router.post(
         res.json({
           token,
           email: user.email,
+          onboardingPhase: user.onboardingPhase,
         });
       });
-
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server Error");

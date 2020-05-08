@@ -1,4 +1,5 @@
 const express = require('express');
+var _ = require('lodash');
 const auth = require('../../middleware/auth');
 
 const router = express.Router();
@@ -20,27 +21,32 @@ router.post('/', auth,
             res.status(400).json({ error: { msg: 'There\'s no selected user apps currently' }});
         }
 
-        let frequentApp = {}
-        
-        frequentApp.app = app;
-        frequentApp.url = ( () => {
-            let userApp =  user.userApps.filter({app: app});
-            return userApp
-        });
-        frequentApp.frequency = ( () => {
-            let freqApp =  user.frequentApps.filter({app: app});
-            if (freqApp) {
-                return freqApp.frequency += 1
-            }
-            return 1
-        });
+        let frequentApp = {};
+        frequentApp.frequentApps = {};
 
-        console.log('check-1', frequentApp);
+        frequentApp.frequentApps.app = app;
 
-        res.json({ok: 'check'});
+        let userApp = _.findIndex(user.userApps, ['app', app]);
+        console.log('check ', userApp);
+        // frequentApp.frequentApps.url = 
+
+        // if (user.frequentApps.filter({app: app}).frequency) {
+        //     frequentApp.frequentApps.frequency = user.frequentApps.filter({app: app}).frequency + 1
+        // } else {
+        //     frequentApp.frequentApps.frequenc = 1;
+        // }
+
+        _user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: frequentApp },
+            { new: true })
+
+        console.log(_user, frequentApp);
+
+        res.json(_user);
     } catch(err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(err.message);
     }
 });
 
@@ -55,7 +61,7 @@ router.get('/', auth, async (req, res) => {
         res.json(categories);
     } catch(err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(err.message);
     }
 });
 
