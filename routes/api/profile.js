@@ -97,6 +97,8 @@ router.post("/", auth, async (req, res) => {
 
     if (userApps) {
       profileFields.userApps = userApps;
+
+      if (onboardingPhase === 3) profileFields.frequentApps = userApps;
     }
 
     if (!user.organization && !organization) {
