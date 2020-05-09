@@ -15,6 +15,12 @@ const UserSchema = new mongoose.Schema({
     avatar: {
         type: String
     },
+    onboardingPhase: {
+        type: Number,
+        required: true,
+        //  1-Registerations Completed, 2-Profile Updated, 3-apps User apps selected, 4- Downloaded Chrome extension/Final
+        default: 1
+    },
     userApps: [{
         app: {
             type: mongoose.Schema.Types.ObjectId,
@@ -22,8 +28,7 @@ const UserSchema = new mongoose.Schema({
         },
         url: {
             type: String,
-            required: false,
-            unique: true,
+            required: false
         }
     }],
     frequentApps: [{
@@ -34,7 +39,6 @@ const UserSchema = new mongoose.Schema({
         url: {
             type: String,
             required: false,
-            unique: true
         },
         frequency: {
             type: Number,

@@ -10,6 +10,23 @@ const Organization = require("../../models/Organization");
 const App = require("../../models/Apps");
 const config = require("config");
 
+// Fisher-Yates sorting algo
+function shuffle (array) {
+	var currentIndex = array.length;
+	var temporaryValue, randomIndex;
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+	return array;
+};
+
 // @route GET /profile
 // @desc get user profile
 // @access private
@@ -55,7 +72,7 @@ router.get("/", auth, async (req, res) => {
 // @desc create or update user profile
 // @access private
 router.post("/", auth, async (req, res) => {
-  let { name, avatar, userApps, organization } = req.body;
+  let { name, avatar, userApps, organization, onboardingPhase } = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -86,8 +103,21 @@ router.post("/", auth, async (req, res) => {
       profileFields.avatar = avatar;
     }
 
+    if (onboardingPhase) {
+      profileFields.onboardingPhase = onboardingPhase;
+    }
+
     if (userApps) {
       profileFields.userApps = userApps;
+
+      if (onboardingPhase === 3) {
+        if (userApps.length>5) {
+          let userAppsArray = [...userApps];
+          profileFields.frequentApps = shuffle(userAppsArray).splice(0,5);
+        } else {
+          profileFields.frequentApps = userApps;
+        }
+      }
     }
 
     if (!user.organization && !organization) {
@@ -116,7 +146,7 @@ router.post("/", auth, async (req, res) => {
       }
     }
 
-    //updating existing user profile
+    // updating existing user profile
     profile = await User.findByIdAndUpdate(
       req.user.id,
       { $set: profileFields },
@@ -124,9 +154,10 @@ router.post("/", auth, async (req, res) => {
     ).populate("organization", ["name"]);
 
     res.json(profile);
+
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send(err.message);
   }
 });
 

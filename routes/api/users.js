@@ -57,12 +57,13 @@ router.post(
         res.json({
           token,
           email: user.email,
+          onboardingPhase: user.onboardingPhase,
         });
       });
 
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).send(err.message);
     }
   }
 );

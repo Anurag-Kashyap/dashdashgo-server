@@ -26,7 +26,6 @@ app.use("/profile", require("./routes/api/profile"));
 app.use("/category", require("./routes/api/category"));
 app.use("/apps", require("./routes/api/apps"));
 app.use("/frequent-apps", require("./routes/api/frequentApps"));
-app.use("/track-registration", require("./routes/api/registrationTracker"));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('./build'));

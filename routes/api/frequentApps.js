@@ -17,8 +17,12 @@ router.post('/', auth,
     try {
         let user = await User.findById(req.user.id);
 
-        if (!user.userApps) {
-            res.status(400).json({ error: { msg: 'There\'s no selected user apps currently' }});
+        if(!user) {
+            res.status(400).json({ error: { msg: 'Invalid JWT token provided' }});
+        } else {
+            if (!user.userApps) {
+                res.status(400).json({ error: { msg: 'There\'s no selected user apps currently' }});
+            }
         }
 
         let newFreqApp = {};
