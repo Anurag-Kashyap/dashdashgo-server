@@ -145,6 +145,8 @@ router.post("/", auth, async (req, res) => {
       { new: true }
     ).populate("organization", ["name"]);
 
+    profile.frequentApps = _user.frequentApps.splice(0,5);
+
     res.json(profile);
 
   } catch (err) {
