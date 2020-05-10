@@ -25,21 +25,27 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
     let { name, url, icon, category } = req.body;
+
     try {
       const app = await Apps.findOne({ name });
+
       const categoryExists = await Category.findOne({
         name: req.body.category,
       });
+
       let _app = new App({
         name,
         url,
         icon,
         category,
       });
+
       if (app) {
         return res.status(400).json({ msg: "App already exists" });
       }
+
       if (!categoryExists) {
         let _category = new Category({
           name,
@@ -51,14 +57,17 @@ router.post(
       } else {
         _app.category = categoryExists.id;
       }
+
       _app.name = name;
       _app.url = url;
       _app.icon = icon;
       await _app.save();
+
       res.json({ error: null, ok: "App saved successfully!" });
+
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).send(err.message);
     }
   }
 );

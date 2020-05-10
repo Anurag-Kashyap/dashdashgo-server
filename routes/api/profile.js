@@ -72,7 +72,7 @@ router.get("/", auth, async (req, res) => {
 // @desc create or update user profile
 // @access private
 router.post("/", auth, async (req, res) => {
-  let { name, avatar, userApps, organization, onboardingPhase } = req.body;
+  let { name, avatar, userApps, organization, onboardingPhase, newApp } = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -109,15 +109,7 @@ router.post("/", auth, async (req, res) => {
 
     if (userApps) {
       profileFields.userApps = userApps;
-
-      if (onboardingPhase === 3) {
-        if (userApps.length>5) {
-          let userAppsArray = [...userApps];
-          profileFields.frequentApps = shuffle(userAppsArray).splice(0,5);
-        } else {
-          profileFields.frequentApps = userApps;
-        }
-      }
+      if (onboardingPhase === 3) profileFields.frequentApps = userApps;
     }
 
     if (!user.organization && !organization) {
@@ -150,6 +142,47 @@ router.post("/", auth, async (req, res) => {
     profile = await User.findByIdAndUpdate(
       req.user.id,
       { $set: profileFields },
+      { new: true }
+    ).populate("organization", ["name"]);
+
+    res.json(profile);
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+
+// @route POST /profile
+// @desc create or update user apps
+// @access private
+router.post("/update-apps", auth, async (req, res) => {
+  
+  let { userApps } = req.body;
+
+  try {
+  
+    let user = await User.findById(req.user.id);
+
+    // non existing user profile
+    if (!user) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "User profile doesn't exist" }] });
+    }
+
+    userApps.forEach(obj => {
+      
+    });
+
+    // updating existing user profile
+    profile = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: { 
+          'candidates.$.status': 'Accepted', 
+        } 
+      },
       { new: true }
     ).populate("organization", ["name"]);
 

@@ -42,16 +42,18 @@ router.post('/', auth,
                 newFreqApp.frequency = 1;
                 freqAppList.frequentApps.push(newFreqApp);
 
-                // sort in desc and limit the max of number of freq apps to 5
-                if (freqAppList.frequentApps.length>5) {
-                    freqAppList.frequentApps = freqAppList.frequentApps.sort(function(a, b) {
-                            return parseFloat(b.frequency) - parseFloat(a.frequency);
-                        }).splice(0,5);
-                }
+                // sort in desc
+                freqAppList.frequentApps = freqAppList.frequentApps.sort(function(a, b) {
+                        return parseFloat(b.frequency) - parseFloat(a.frequency);
+                    });
 
             } else {                            // frequent apps exist + this app is already in here
                 newFreqApp.frequency = user.frequentApps[FreqAppIndex].frequency + 1;
-                user.frequentApps[FreqAppIndex] = newFreqApp;
+                // user.frequentApps[FreqAppIndex] = newFreqApp;
+                freqAppList.frequentApps[FreqAppIndex] = newFreqApp;
+                freqAppList.frequentApps = freqAppList.frequentApps.sort(function(a, b) {
+                        return parseFloat(b.frequency) - parseFloat(a.frequency);
+                    });
             }
         } else {                                // frequent apps doesn't exist yet
             newFreqApp.frequency = 1;
@@ -64,6 +66,8 @@ router.post('/', auth,
             { new: true }
         );
 
+        _user.frequentApps = _user.frequentApps.splice(0,5); // sending only top 5 frequent Apps
+
         res.json(_user);
 
     } catch(err) {
@@ -74,13 +78,18 @@ router.post('/', auth,
 
 
 // @route GET /frequent-apps
-// @desc retrieve top 5 high frequency app
+// @desc retrieve top 5 frequently used app
 // @access private
 router.get('/', auth, async (req, res) => {
     try {
-        const filter = {};
-        const categories = await Category.find(filter);
-        res.json(categories);
+        _user = await User.findByIdAndUpdate(req.user.id);
+        if (_user) {
+            if (!_user.frequency) {
+                return res.status(400).json({ error: { msg: 'There\'s no frequently used apps' }});
+            }
+            return res.json({frequentApps: _user.frequentApps.splice(0,5)});
+        }
+        res.status(400).json({ error: { msg: 'User not Found' }});
     } catch(err) {
         console.error(err.message);
         res.status(500).send(err.message);
