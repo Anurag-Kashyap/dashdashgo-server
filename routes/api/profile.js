@@ -61,6 +61,7 @@ router.get("/", auth, async (req, res) => {
         .status(400)
         .json({ errors: [{ msg: "User Profile Doesn't exist" }] });
     }
+    user.frequentApps = user.frequentApps.splice(0,5);
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -145,7 +146,7 @@ router.post("/", auth, async (req, res) => {
       { new: true }
     ).populate("organization", ["name"]);
 
-    profile.frequentApps = _user.frequentApps.splice(0,5);
+    profile.frequentApps = profile.frequentApps.splice(0,5);
 
     res.json(profile);
 
