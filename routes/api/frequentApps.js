@@ -82,7 +82,16 @@ router.post('/', auth,
 // @access private
 router.get('/', auth, async (req, res) => {
     try {
-        _user = await User.findById(req.user.id);
+        _user = await User.findById(req.user.id)
+        .populate({
+          path: "frequentApps.app",
+          select: {
+            _id: 1,
+            name: 1,
+            icon: 1,
+          },
+        });
+        
         if (_user) {
             if (!_user.frequentApps) {
                 return res.status(400).json({ error: { msg: 'There\'s no frequently used apps' }});

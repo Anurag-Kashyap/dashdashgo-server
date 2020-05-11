@@ -159,6 +159,34 @@ router.post("/", auth, async (req, res) => {
 });
 
 
+// @route GET /profile/apps
+// @desc get user apps
+// @access private
+router.get("/apps", auth, async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id)
+      .populate({
+        path: "userApps.app",
+        select: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+        },
+      })
+      .select('-password');
+    if (!user) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "User Profile Doesn't exist" }] });
+    }
+    res.json({ userApps: user.userApps });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+
 // @route POST /profile
 // @desc create or update user apps
 // @access private
