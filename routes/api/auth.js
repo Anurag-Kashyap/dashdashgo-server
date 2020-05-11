@@ -69,4 +69,25 @@ async (req, res) => {
     }
 });
 
+
+// @route POST /users
+// @desc reset user password
+// @access public
+router.post("/reset-password", async (req, res) => {
+    let {email, newpassword} = req.body;
+  
+    try {
+      let user = User.findOne({email: email});
+  
+      if (!user) {
+        res.status(400).json({ error: { msg: 'No user exists with this email' }});
+      }
+  
+      
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send(err.message);
+    }
+  })
+
 module.exports = router;

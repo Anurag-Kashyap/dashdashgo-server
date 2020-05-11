@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
             type: String,
             required: false
         }
-    }],
+    },{ _id : false }],
     frequentApps: [{
         app: {
             type: mongoose.Schema.Types.ObjectId,
@@ -44,7 +44,7 @@ const UserSchema = new mongoose.Schema({
             type: Number,
             default: 0
         }
-    }],
+    },{ _id : false }],
     organization: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'organization',

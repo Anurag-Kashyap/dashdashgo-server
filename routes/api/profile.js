@@ -55,7 +55,8 @@ router.get("/", auth, async (req, res) => {
           name: 1,
           icon: 1,
         },
-      });
+      })
+      .select('-password');
     if (!user) {
       return res
         .status(400)
@@ -144,7 +145,8 @@ router.post("/", auth, async (req, res) => {
       req.user.id,
       { $set: profileFields },
       { new: true }
-    ).populate("organization", ["name"]);
+    ).populate("organization", ["name"])
+    .select('-password');
 
     profile.frequentApps = profile.frequentApps.splice(0,5);
 
@@ -166,7 +168,13 @@ router.post("/update-apps", auth, async (req, res) => {
 
   try {
   
-    let user = await User.findById(req.user.id);
+    let user = await User.findById(req.user.id).populate({
+      path: "userApps",
+      select: {
+        _id: 0,
+        name: 1,
+      },
+    });
 
     // non existing user profile
     if (!user) {
@@ -175,21 +183,34 @@ router.post("/update-apps", auth, async (req, res) => {
         .json({ errors: [{ msg: "User profile doesn't exist" }] });
     }
 
-    userApps.forEach(obj => {
+    console.log(userApps, user)
+
+    // userApps.forEach(obj => {
       
-    });
+    // });
+
+    // profile = await User.findByIdAndUpdate(
+    //   {_id: id}, 
+    //   { 
+    //     "$set": {[`items.$[outer].${propertyName}`]: value} 
+    //   },
+    //   { 
+    //     "arrayFilters": [{ "outer.id": itemId }]
+    //   }
+    // );
 
     // updating existing user profile
-    profile = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: { 
-          'candidates.$.status': 'Accepted', 
-        } 
-      },
-      { new: true }
-    ).populate("organization", ["name"]);
+    // profile = await User.findByIdAndUpdate(
+    //   req.user.id,
+    //   { $set: { 
+    //       'candidates.$.status': 'Accepted', 
+    //     } 
+    //   },
+    //   { new: true }
+    // );
 
-    res.json(profile);
+    // res.json(profile);
+    res.json({error:null, ok: true});
 
   } catch (err) {
     console.error(err.message);

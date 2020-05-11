@@ -101,6 +101,7 @@ router.get("/", auth, async (req, res) => {
         url: 1,
         icon: 1,
       })
+      .sort('category')
       .exec((err, data) => {
         let arr = [];
         data.forEach((ele) => {
@@ -119,7 +120,7 @@ router.get("/", auth, async (req, res) => {
     // res.json(apps);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send(err.message);
   }
 });
 
