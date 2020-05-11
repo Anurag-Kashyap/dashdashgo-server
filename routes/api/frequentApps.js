@@ -82,9 +82,9 @@ router.post('/', auth,
 // @access private
 router.get('/', auth, async (req, res) => {
     try {
-        _user = await User.findByIdAndUpdate(req.user.id);
+        _user = await User.findById(req.user.id);
         if (_user) {
-            if (!_user.frequency) {
+            if (!_user.frequentApps) {
                 return res.status(400).json({ error: { msg: 'There\'s no frequently used apps' }});
             }
             return res.json({frequentApps: _user.frequentApps.splice(0,5)});
