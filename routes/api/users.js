@@ -50,6 +50,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          password: user.password
         },
       };
       jwt.sign(payload, config.get("jwtSecret"), (err, token) => {

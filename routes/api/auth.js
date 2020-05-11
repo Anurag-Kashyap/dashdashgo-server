@@ -35,6 +35,7 @@ async (req, res) => {
 
     try {
         let user = await User.findOne({ email });
+        console.log(user);
         
         if (!user) {
             return res
@@ -52,7 +53,8 @@ async (req, res) => {
         // Return JWT
         const payload = {
             user: {
-                id: user.id
+                id: user.id,
+                password: user.password
             }
         }
         jwt.sign(
@@ -72,18 +74,52 @@ async (req, res) => {
 
 // @route POST /users
 // @desc reset user password
-// @access public
-router.post("/reset-password", async (req, res) => {
-    let {email, newpassword} = req.body;
+// @access private
+router.post("/update-password", auth, async (req, res) => {
+    let { oldpassword, newpassword } = req.body;
   
     try {
-      let user = User.findOne({email: email});
+    
+      let user = await User.findById(req.user.id);
   
       if (!user) {
-        res.status(400).json({ error: { msg: 'No user exists with this email' }});
+        res.status(400).json({ errors: [{ msg: 'No user exists with this email' }] });
       }
-  
       
+      const isMatch = await bcrypt.compare(oldpassword, user.password);
+      if (!isMatch) {
+          return res
+            .status(400)
+            .json({ errors: [{ msg: 'Invalid credentials provided'}] });
+        }
+        
+  
+      const salt = await bcrypt.genSalt(10);
+      let updatedPass = {};
+      updatedPass.password = await bcrypt.hash(newpassword, salt);
+
+      await User.findByIdAndUpdate(
+         req.user.id,
+         {$set: updatedPass}
+      );
+
+      // Return JWT
+      const payload = {
+        user: {
+            id: User.id,
+            password: User.password
+        }
+      }
+
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        (err, token) => {
+            if (err) throw err;
+            res.json({ token: token });
+        }
+      );
+
     } catch (err) {
       console.error(err.message);
       res.status(500).send(err.message);
