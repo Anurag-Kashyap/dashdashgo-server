@@ -1,20 +1,22 @@
 {
   "files": {
-    "main.css": "/static/css/main.d10e96a4.chunk.css",
-    "main.js": "/static/js/main.a1d95a2f.chunk.js",
-    "main.js.map": "/static/js/main.a1d95a2f.chunk.js.map",
+    "main.css": "/static/css/main.502c0f51.chunk.css",
+    "main.js": "/static/js/main.c3612992.chunk.js",
+    "main.js.map": "/static/js/main.c3612992.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.9798a980.js",
     "runtime-main.js.map": "/static/js/runtime-main.9798a980.js.map",
     "static/css/2.43afaa0a.chunk.css": "/static/css/2.43afaa0a.chunk.css",
-    "static/js/2.3bdd1968.chunk.js": "/static/js/2.3bdd1968.chunk.js",
-    "static/js/2.3bdd1968.chunk.js.map": "/static/js/2.3bdd1968.chunk.js.map",
+    "static/js/2.4b1cd3d1.chunk.js": "/static/js/2.4b1cd3d1.chunk.js",
+    "static/js/2.4b1cd3d1.chunk.js.map": "/static/js/2.4b1cd3d1.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.97c48fe4382560e8166295444ce3e874.js": "/precache-manifest.97c48fe4382560e8166295444ce3e874.js",
+    "precache-manifest.358b0a2cf40b47babc56d9b2057da539.js": "/precache-manifest.358b0a2cf40b47babc56d9b2057da539.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.43afaa0a.chunk.css.map": "/static/css/2.43afaa0a.chunk.css.map",
-    "static/css/main.d10e96a4.chunk.css.map": "/static/css/main.d10e96a4.chunk.css.map",
-    "static/js/2.3bdd1968.chunk.js.LICENSE.txt": "/static/js/2.3bdd1968.chunk.js.LICENSE.txt",
+    "static/css/main.502c0f51.chunk.css.map": "/static/css/main.502c0f51.chunk.css.map",
+    "static/js/2.4b1cd3d1.chunk.js.LICENSE.txt": "/static/js/2.4b1cd3d1.chunk.js.LICENSE.txt",
     "static/media/semantic.min.css": "/static/media/outline-icons.ef60a4f6.woff",
+    "static/media/ChromeExtension.scss": "/static/media/chrome-extension-bg.6239cfe6.jpg",
+    "static/media/chrome-extension-icon.svg": "/static/media/chrome-extension-icon.212361e0.svg",
     "static/media/header-user.svg": "/static/media/header-user.4480ca39.svg",
     "static/media/Login.scss": "/static/media/homescreen-banner.b39222a5.png",
     "static/media/logout.svg": "/static/media/logout.ec1e9378.svg",
@@ -25,8 +27,8 @@
   "entrypoints": [
     "static/js/runtime-main.9798a980.js",
     "static/css/2.43afaa0a.chunk.css",
-    "static/js/2.3bdd1968.chunk.js",
-    "static/css/main.d10e96a4.chunk.css",
-    "static/js/main.a1d95a2f.chunk.js"
+    "static/js/2.4b1cd3d1.chunk.js",
+    "static/css/main.502c0f51.chunk.css",
+    "static/js/main.c3612992.chunk.js"
   ]
 }
