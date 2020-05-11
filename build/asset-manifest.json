@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.502c0f51.chunk.css",
+    "main.css": "/static/css/main.41fcff35.chunk.css",
     "main.js": "/static/js/main.c3612992.chunk.js",
     "main.js.map": "/static/js/main.c3612992.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.9798a980.js",
@@ -9,10 +9,10 @@
     "static/js/2.4b1cd3d1.chunk.js": "/static/js/2.4b1cd3d1.chunk.js",
     "static/js/2.4b1cd3d1.chunk.js.map": "/static/js/2.4b1cd3d1.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.358b0a2cf40b47babc56d9b2057da539.js": "/precache-manifest.358b0a2cf40b47babc56d9b2057da539.js",
+    "precache-manifest.d06c15e0b77da7eb7e8d69d175d380c7.js": "/precache-manifest.d06c15e0b77da7eb7e8d69d175d380c7.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.43afaa0a.chunk.css.map": "/static/css/2.43afaa0a.chunk.css.map",
-    "static/css/main.502c0f51.chunk.css.map": "/static/css/main.502c0f51.chunk.css.map",
+    "static/css/main.41fcff35.chunk.css.map": "/static/css/main.41fcff35.chunk.css.map",
     "static/js/2.4b1cd3d1.chunk.js.LICENSE.txt": "/static/js/2.4b1cd3d1.chunk.js.LICENSE.txt",
     "static/media/semantic.min.css": "/static/media/outline-icons.ef60a4f6.woff",
     "static/media/ChromeExtension.scss": "/static/media/chrome-extension-bg.6239cfe6.jpg",
@@ -28,7 +28,7 @@
     "static/js/runtime-main.9798a980.js",
     "static/css/2.43afaa0a.chunk.css",
     "static/js/2.4b1cd3d1.chunk.js",
-    "static/css/main.502c0f51.chunk.css",
+    "static/css/main.41fcff35.chunk.css",
     "static/js/main.c3612992.chunk.js"
   ]
 }
