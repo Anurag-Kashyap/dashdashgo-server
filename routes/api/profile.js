@@ -11,21 +11,21 @@ const App = require("../../models/Apps");
 const config = require("config");
 
 // Fisher-Yates sorting algo
-function shuffle (array) {
-	var currentIndex = array.length;
-	var temporaryValue, randomIndex;
-	// While there remain elements to shuffle...
-	while (0 !== currentIndex) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
-	return array;
-};
+function shuffle(array) {
+  var currentIndex = array.length;
+  var temporaryValue, randomIndex;
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
 
 // @route GET /profile
 // @desc get user profile
@@ -56,13 +56,13 @@ router.get("/", auth, async (req, res) => {
           icon: 1,
         },
       })
-      .select('-password');
+      .select("-password");
     if (!user) {
       return res
         .status(400)
         .json({ errors: [{ msg: "User Profile Doesn't exist" }] });
     }
-    user.frequentApps = user.frequentApps.splice(0,5);
+    user.frequentApps = user.frequentApps.splice(0, 5);
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -74,7 +74,14 @@ router.get("/", auth, async (req, res) => {
 // @desc create or update user profile
 // @access private
 router.post("/", auth, async (req, res) => {
-  let { name, avatar, userApps, organization, onboardingPhase, newApp } = req.body;
+  let {
+    name,
+    avatar,
+    userApps,
+    organization,
+    onboardingPhase,
+    newApp,
+  } = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -145,19 +152,18 @@ router.post("/", auth, async (req, res) => {
       req.user.id,
       { $set: profileFields },
       { new: true }
-    ).populate("organization", ["name"])
-    .select('-password');
+    )
+      .populate("organization", ["name"])
+      .select("-password");
 
-    profile.frequentApps = profile.frequentApps.splice(0,5);
+    profile.frequentApps = profile.frequentApps.splice(0, 5);
 
     res.json(profile);
-
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
   }
 });
-
 
 // @route GET /profile/apps
 // @desc get user apps
@@ -173,7 +179,7 @@ router.get("/apps", auth, async (req, res) => {
           icon: 1,
         },
       })
-      .select('-password');
+      .select("-password");
     if (!user) {
       return res
         .status(400)
@@ -186,16 +192,13 @@ router.get("/apps", auth, async (req, res) => {
   }
 });
 
-
 // @route POST /profile
 // @desc create or update user apps
 // @access private
 router.post("/update-app-url", auth, async (req, res) => {
-  
   let userApps = req.body;
 
   try {
-  
     let user = await User.findById(req.user.id);
 
     // non existing user profile
@@ -207,17 +210,32 @@ router.post("/update-app-url", auth, async (req, res) => {
 
     let _user = await User.findOneAndUpdate(
       {
-        "_id": req.user.id,
-        "userApps.app": userApps.app
+        _id: req.user.id,
+        "userApps.app": userApps.app,
       },
       {
-        "$set": { "userApps.$.url": userApps.url }
+        $set: { "userApps.$.url": userApps.url },
       },
       { new: true }
     )
+      .populate({
+        path: "userApps.app",
+        select: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+        },
+      })
+      .populate({
+        path: "frequentApps.app",
+        select: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+        },
+      });
 
     res.json(_user);
-
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);

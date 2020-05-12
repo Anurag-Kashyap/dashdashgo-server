@@ -4,6 +4,7 @@ config/default.json
 
 # compiled output
 /dist
+/build
 /tmp
 /out-tsc
 /documentation
