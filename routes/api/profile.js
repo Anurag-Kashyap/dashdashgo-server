@@ -208,13 +208,6 @@ router.post("/update-app-url", auth, async (req, res) => {
         .json({ errors: [{ msg: "User profile doesn't exist" }] });
     }
 
-    // console.log(userApps);
-    // if (!userApps.exists) {
-    //   return res
-    //     .status(400)
-    //     .json({ errors: [{ msg: "Please send some valid data" }] });
-    // }
-
     let _user1 = await User.findOneAndUpdate(
       {
         _id: req.user.id,
@@ -257,6 +250,73 @@ router.post("/update-app-url", auth, async (req, res) => {
         return parseFloat(b.frequency) - parseFloat(a.frequency);
     });
     _user2.frequentApps = _user2.frequentApps.splice(0,5);
+
+    res.json(_user2);
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+
+// @route POST /profile
+// @desc create or update user apps
+// @access private
+router.post("/update-userapps", auth, async (req, res) => {
+  let userApps = req.body;
+
+  try {
+    let user = await User.findById(req.user.id);
+
+    // non existing user profile
+    if (!user) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "User profile doesn't exist" }] });
+    }
+
+    let _user1 = await User.findOneAndUpdate(
+      {
+        _id: req.user.id,
+        "userApps.app": userApps.app,
+      },
+      {
+        $set: { "userApps.$.url": userApps.url },
+      },
+      { new: true }
+    );
+
+    let _user2 = await User.findOneAndUpdate(
+      {
+        _id: req.user.id,
+        "frequentApps.app": userApps.app,
+      },
+      {
+        $set: { "frequentApps.$.url": userApps.url },
+      },
+      { new: true },
+    )
+      .populate({
+        path: "userApps.app",
+        select: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+        },
+      })
+      .populate({
+        path: "frequentApps.app",
+        select: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+        },
+      });
+    
+    _user2.frequentApps = _user2.frequentApps.sort(function(a, b) {
+        return parseFloat(b.frequency) - parseFloat(a.frequency);
+    }).splice(0,5);
 
     res.json(_user2);
 
