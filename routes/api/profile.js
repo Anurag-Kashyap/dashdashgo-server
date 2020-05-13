@@ -264,7 +264,7 @@ router.post("/update-app-url", auth, async (req, res) => {
 // @desc create or update user apps
 // @access private
 router.post("/update-userapps", auth, async (req, res) => {
-  let userApps = req.body;
+  let {userApps} = req.body;
 
   try {
     let user = await User.findById(req.user.id);
@@ -276,49 +276,83 @@ router.post("/update-userapps", auth, async (req, res) => {
         .json({ errors: [{ msg: "User profile doesn't exist" }] });
     }
 
-    let _user1 = await User.findOneAndUpdate(
-      {
-        _id: req.user.id,
-        "userApps.app": userApps.app,
-      },
-      {
-        $set: { "userApps.$.url": userApps.url },
-      },
-      { new: true }
-    );
-
-    let _user2 = await User.findOneAndUpdate(
-      {
-        _id: req.user.id,
-        "frequentApps.app": userApps.app,
-      },
-      {
-        $set: { "frequentApps.$.url": userApps.url },
-      },
-      { new: true },
-    )
-      .populate({
-        path: "userApps.app",
-        select: {
-          _id: 1,
-          name: 1,
-          icon: 1,
-        },
-      })
-      .populate({
-        path: "frequentApps.app",
-        select: {
-          _id: 1,
-          name: 1,
-          icon: 1,
-        },
+    newApps = [];
+    deletedApps = [];
+    userApps.forEach(obj => {  
+      let checker = [];
+      user.userApps.forEach(el => {
+        if (JSON.stringify(obj.app)==JSON.stringify(el.app)) {
+          checker.push(true);
+        } else checker.push(false);
       });
+      let existence = checker.findIndex(obj => obj===true);
+      if (existence<0) newApps.push(obj);
+    });
+
+    user.userApps.forEach(obj => {
+      let checker = [];
+      userApps.forEach(el => {
+        if (JSON.stringify(obj.app)==JSON.stringify(el.app)) {
+          checker.push(true);
+        } else checker.push(false);
+      });
+      let existence = checker.findIndex(obj => obj===true);
+      if (existence<0) deletedApps.push(obj);
+    });
+
+    // if any new app exists
+    if (newApps.length) {
+      newApps.forEach(async obj => {
+        await User.updateOne(
+          {_id: req.user.id},
+          { $push: {
+              "userApps": {app: obj.app, url: obj.url},
+              "frequentApps": {app: obj.app, url: obj.url, frequency: 0}
+            }
+          }
+        );
+        console.log('added new app - ', obj.url);
+      });
+    }
+
+    // if any existing app is deleted
+    if (deletedApps.length) {
+      deletedApps.forEach(async obj => {
+        await User.updateOne(
+          {_id: req.user.id},
+          { $pull: {
+              "userApps": {app: obj.app},
+              "frequentApps": {app: obj.app}
+            }
+          }
+        );
+        console.log('deleted app - ', obj.url);
+      });
+    }
+
+    let updatedUser = await User.findById(req.user.id)
+    .populate({
+      path: "userApps.app",
+      select: {
+        _id: 1,
+        name: 1,
+        icon: 1,
+      },
+    })
+    .populate({
+      path: "frequentApps.app",
+      select: {
+        _id: 1,
+        name: 1,
+        icon: 1,
+      },
+    });
     
-    _user2.frequentApps = _user2.frequentApps.sort(function(a, b) {
+    updatedUser.frequentApps = updatedUser.frequentApps.sort(function(a, b) {
         return parseFloat(b.frequency) - parseFloat(a.frequency);
     }).splice(0,5);
 
-    res.json(_user2);
+    res.json(updatedUser);
 
   } catch (err) {
     console.error(err.message);
