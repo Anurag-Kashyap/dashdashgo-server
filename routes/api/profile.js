@@ -208,7 +208,14 @@ router.post("/update-app-url", auth, async (req, res) => {
         .json({ errors: [{ msg: "User profile doesn't exist" }] });
     }
 
-    let _user = await User.findOneAndUpdate(
+    // console.log(userApps);
+    // if (!userApps.exists) {
+    //   return res
+    //     .status(400)
+    //     .json({ errors: [{ msg: "Please send some valid data" }] });
+    // }
+
+    let _user1 = await User.findOneAndUpdate(
       {
         _id: req.user.id,
         "userApps.app": userApps.app,
@@ -217,6 +224,17 @@ router.post("/update-app-url", auth, async (req, res) => {
         $set: { "userApps.$.url": userApps.url },
       },
       { new: true }
+    );
+
+    let _user2 = await User.findOneAndUpdate(
+      {
+        _id: req.user.id,
+        "frequentApps.app": userApps.app,
+      },
+      {
+        $set: { "frequentApps.$.url": userApps.url },
+      },
+      { new: true },
     )
       .populate({
         path: "userApps.app",
@@ -234,8 +252,14 @@ router.post("/update-app-url", auth, async (req, res) => {
           icon: 1,
         },
       });
+    
+    _user2.frequentApps = _user2.frequentApps.sort(function(a, b) {
+        return parseFloat(b.frequency) - parseFloat(a.frequency);
+    });
+    _user2.frequentApps = _user2.frequentApps.splice(0,5);
 
-    res.json(_user);
+    res.json(_user2);
+
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
