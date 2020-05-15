@@ -301,10 +301,8 @@ router.post("/update-userapps", auth, async (req, res) => {
     });
 
     // if any new app exists
-    console.log('check-1');
     if (newApps.length) {
-      await newApps.forEach(async obj => {
-        console.log('check-2');
+      newApps.forEach(async obj => {
         await User.updateOne(
           {_id: req.user.id},
           { $push: {
@@ -318,10 +316,8 @@ router.post("/update-userapps", auth, async (req, res) => {
     }
 
     // if any existing app is deleted
-    console.log('check-3');
     if (deletedApps.length) {
-      await deletedApps.forEach(async obj => {
-        console.log('check-4');
+      deletedApps.forEach(async obj => {
         await User.updateOne(
           {_id: req.user.id},
           { $pull: {
@@ -333,7 +329,7 @@ router.post("/update-userapps", auth, async (req, res) => {
         console.log('deleted app - ', obj.url);
       });
     }
-    console.log('check-5');
+
     let updatedUser = await User.findById(req.user.id)
     .populate({
       path: "userApps.app",
@@ -355,8 +351,6 @@ router.post("/update-userapps", auth, async (req, res) => {
     updatedUser.frequentApps = updatedUser.frequentApps.sort(function(a, b) {
         return parseFloat(b.frequency) - parseFloat(a.frequency);
     }).splice(0,5);
-
-    console.log('check-6');
 
     res.json(updatedUser);
 
