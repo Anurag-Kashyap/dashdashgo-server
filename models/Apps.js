@@ -14,6 +14,10 @@ const AppsSchema = new mongoose.Schema({
   icon: {
     type: String,
   },
+  exact: {
+    type: Boolean,
+    default: true,
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "category",

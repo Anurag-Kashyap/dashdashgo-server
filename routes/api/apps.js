@@ -26,7 +26,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let { name, url, icon, category } = req.body;
+    let { name, url, icon, exact, category } = req.body;
 
     try {
       const app = await Apps.findOne({ name });
@@ -39,6 +39,7 @@ router.post(
         name,
         url,
         icon,
+        exact,
         category,
       });
 
@@ -64,7 +65,6 @@ router.post(
       await _app.save();
 
       res.json({ error: null, ok: "App saved successfully!" });
-
     } catch (err) {
       console.error(err.message);
       res.status(500).send(err.message);
@@ -100,8 +100,9 @@ router.get("/", auth, async (req, res) => {
         name: 1,
         url: 1,
         icon: 1,
+        exact: 1,
       })
-      .sort('category')
+      .sort("category")
       .exec((err, data) => {
         let arr = [];
         data.forEach((ele) => {
