@@ -27,13 +27,19 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let { name, url, icon, exact, category, creator } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if(!user) {
+      return res.status(400).json({error: { msg: "User doesn't exist" }});
+    }
+
+    let { name, url, icon, exact, category } = req.body;
+    let creator = user.organization;
 
     try {
       const app = await Apps.findOne({ name });
 
       const categoryExists = await Category.findOne({name: category});
-
       let _app = new App({
         name,
         url,
@@ -66,6 +72,7 @@ router.post(
       await _app.save();
 
       res.json({ error: null, ok: "App saved successfully!" });
+      
     } catch (err) {
       console.error(err.message);
       res.status(500).send(err.message);
