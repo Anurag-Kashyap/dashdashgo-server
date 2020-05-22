@@ -6,6 +6,7 @@ const auth = require("../../middleware/auth");
 const router = express.Router();
 const Category = require("../../models/Category");
 const App = require("../../models/Apps");
+const User = require("../../models/User");
 const config = require("config");
 
 // @route POST /apps
@@ -31,7 +32,7 @@ router.post(
     try {
       const app = await Apps.findOne({ name });
 
-      const categoryExists = await Category.findById(category);
+      const categoryExists = await Category.findOne({name: category});
 
       let _app = new App({
         name,
@@ -55,7 +56,7 @@ router.post(
         const newCategory = await Category.findOne({ name: category });
         _app.category = newCategory.id;
       } else {
-        _app.category = category;
+        _app.category = categoryExists.id;
       }
 
       _app.name = name;
@@ -78,7 +79,14 @@ router.post(
 router.get("/", auth, async (req, res) => {
   try {
     
-    let { organization } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(400).json({error: { msg: "User doesn't exist" }});
+    }
+
+    organization = user.organization;
+    
     const apps = await App.find({ $or:[ { creator: organization}, { creator: null }] })
       .populate({
         path: "category",
