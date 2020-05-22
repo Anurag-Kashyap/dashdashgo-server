@@ -26,14 +26,12 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let { name, url, icon, exact, category } = req.body;
+    let { name, url, icon, exact, category, creator } = req.body;
 
     try {
       const app = await Apps.findOne({ name });
 
-      const categoryExists = await Category.findOne({
-        name: req.body.category,
-      });
+      const categoryExists = await Category.findById(category);
 
       let _app = new App({
         name,
@@ -41,6 +39,7 @@ router.post(
         icon,
         exact,
         category,
+        creator
       });
 
       if (app) {
@@ -49,19 +48,20 @@ router.post(
 
       if (!categoryExists) {
         let _category = new Category({
-          name,
+          name
         });
         _category.name = category;
         await _category.save();
         const newCategory = await Category.findOne({ name: category });
         _app.category = newCategory.id;
       } else {
-        _app.category = categoryExists.id;
+        _app.category = category;
       }
 
       _app.name = name;
       _app.url = url;
       _app.icon = icon;
+      _app.creator = creator;
       await _app.save();
 
       res.json({ error: null, ok: "App saved successfully!" });
@@ -77,17 +77,9 @@ router.post(
 // @access private
 router.get("/", auth, async (req, res) => {
   try {
-    const filter = {};
-    // const apps = await App.find(filter);
-    // const apps2 = await App.find({}).populate("category", "name -_id").select({
-    //   _id: 0,
-    //   name: 1,
-    //   url: 1,
-    //   icon: 1,
-    //   category_: 1,
-    // });
-    // res.json(apps2);
-    const apps = await App.find({})
+    
+    let { organization } = req.body;
+    const apps = await App.find({ $or:[ { creator: organization}, { creator: null }] })
       .populate({
         path: "category",
         select: {
@@ -101,27 +93,43 @@ router.get("/", auth, async (req, res) => {
         url: 1,
         icon: 1,
         exact: 1,
+        isAdminApproved: 1,
+        creator: 1
       })
       .sort("category")
       .exec((err, data) => {
-        let arr = [];
-        data.forEach((ele) => {
-          const isHeader = arr.find((obj) => obj.header === ele.category.name);
+        try {
+          let arr = [];
+          data.forEach((ele) => {
+            const isHeader = arr.find((obj) => obj.header === ele.category.name);
 
-          if (!isHeader)
-            arr.push({
-              header: ele.category.name,
-            });
+            if (!isHeader)
+              arr.push({
+                header: ele.category.name,
+              });
 
-          arr.push(ele);
-        });
-        res.json(arr);
-      });
+            arr.push(ele);
+          });
+          res.json(arr);
+        } catch (error) {
+          res.json(err);
+        }
+      });    
 
     // res.json(apps);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
+  }
+});
+
+router.post("/test", auth, async (req, res) => {
+  try {
+    let { app, creator } = req.body;
+    await App.findByIdAndUpdate(app, { $set: { creator: creator }});
+    res.json({ok: true});
+  } catch (error) {
+    res.json({err: error})
   }
 });
 
