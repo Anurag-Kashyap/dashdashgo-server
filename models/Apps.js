@@ -23,6 +23,15 @@ const AppsSchema = new mongoose.Schema({
     ref: "category",
     required: true,
   },
+  isAdminApproved: {
+    type: Boolean,
+    default: false
+  },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'organization',
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

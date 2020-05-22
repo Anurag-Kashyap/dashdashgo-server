@@ -1,4 +1,4 @@
 {
-    "mongoURI": "mongodb+srv://default:LK9kAB3kuArDgvw@rockstack-is-awzon.mongodb.net/test?retryWrites=true&w=majority",
+    "mongoURI": "mongodb+srv://admin:LK9kAB3kuArDgvw@is-dev-fenzy.mongodb.net/test?retryWrites=true&w=majority",
     "jwtSecret": "MySecretKey"
 }
