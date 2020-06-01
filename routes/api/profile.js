@@ -125,8 +125,10 @@ router.post("/", auth, async (req, res) => {
 
     if (!user.organization && !organization) {
       // no org data provided nor org mapped with user before
+      
       organization = "Default Organization";
       let org = await Organization.findOne({ name: organization });
+
       if (!org) {
         _organization.name = organization;
         await _organization.save();
@@ -139,11 +141,13 @@ router.post("/", auth, async (req, res) => {
       let org = await Organization.findOne({ name: organization });
       if (!org) {
         // org data provided but org non-existent before
+        
         _organization.name = organization;
         await _organization.save();
         let newOrg = await Organization.findOne({ name: organization });
         profileFields.organization = newOrg.id;
       } else {
+        
         // org data provided and org exists
         profileFields.organization = org.id;
       }
