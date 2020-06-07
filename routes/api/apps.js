@@ -107,6 +107,8 @@ router.get("/", auth, async (req, res) => {
         name: 1,
         url: 1,
         icon: 1,
+        iconDark: 1,
+        iconLight: 1,
         exact: 1,
         isAdminApproved: 1,
         creator: 1

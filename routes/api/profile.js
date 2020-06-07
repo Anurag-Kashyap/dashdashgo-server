@@ -46,6 +46,8 @@ router.get("/", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       })
@@ -55,6 +57,8 @@ router.get("/", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       })
@@ -183,6 +187,8 @@ router.get("/apps", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       })
@@ -242,6 +248,8 @@ router.post("/update-app-url", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       })
@@ -251,6 +259,8 @@ router.post("/update-app-url", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       });
@@ -346,6 +356,8 @@ router.post("/update-userapps", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       })
@@ -355,6 +367,8 @@ router.post("/update-userapps", auth, async (req, res) => {
           _id: 1,
           name: 1,
           icon: 1,
+          iconDark: 1,
+          iconLight: 1,
           exact: 1,
         },
       });

@@ -14,6 +14,12 @@ const AppsSchema = new mongoose.Schema({
   icon: {
     type: String,
   },
+  iconDark: {
+    type: String,
+  },
+  iconLight: {
+    type: String,
+  },
   exact: {
     type: Boolean,
     default: true,
