@@ -36,7 +36,7 @@ router.get("/", auth, async (req, res) => {
       .populate({
         path: "organization",
         select: {
-          _id: 0,
+          _id: 1,
           name: 1,
         },
       })
