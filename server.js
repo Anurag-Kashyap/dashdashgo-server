@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
   //   return next();
   // });
   app.use(forceDomain({
-    hostname: 'www.dashdashgo.com',
+    hostname: 'https://www.dashdashgo.com',
     protocol: 'https'
   }));
 }
