@@ -1,4 +1,5 @@
 const express = require("express");
+const forceDomain = require('forcedomain');
 const connectDB = require("./config/db");
 var cors = require("cors");
 const app = express();
@@ -32,12 +33,16 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
   });
-  app.use(function(req, res, next) {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(['https://', req.get('Host'), req.url].join(''));
-    }
-    return next();
-  });
+  // app.use(function(req, res, next) {
+  //   if (req.headers['x-forwarded-proto'] !== 'https') {
+  //       return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  //   }
+  //   return next();
+  // });
+  app.use(forceDomain({
+    hostname: 'www.dashdashgo.com',
+    protocol: 'https'
+  }));
 }
 
 const PORT = process.env.PORT || 5000;
